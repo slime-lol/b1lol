@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #001f3f;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      color: #ff851b;
+      margin-bottom: 5px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      background-color: #444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: #999;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .user-info {
+      flex-grow: 1;
+    }
+    .user-info p {
+      margin: 4px 0;
+    }
+    .stats {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .stats h2 {
+      color: #7FDBFF;
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td, th {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+    th {
+      color: #ff851b;
+      width: 40%;
+    }
+    .badges {
+      margin-top: 20px;
+    }
+    .badge {
+      display: inline-block;
+      background-color: #0074D9;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 12px;
+      margin: 4px 4px 4px 0;
+      font-size: 0.85rem;
+    }
+    .loading, .error {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 1.2rem;
+      color: #ff4136;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content">
+    <div class="loading">Loading user profile...</div>
+  </div>
+
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    async function fetchUserProfile(nkid) {
+      const url = `https://priority-static-api.nkstatic.com/storage/static/2/${nkid}/PublicProfile.save`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.json();
+    }
+
+    function createAvatar(name, avatarNum) {
+      // Placeholder avatar with initials
+      if (avatarNum) {
+        // Optional: If you have avatar images mapped, insert logic here
+        // For now fallback to initials
+      }
+      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      return `<div class="avatar">${initials}</div>`;
+    }
+
+    function displayProfile(data) {
+      const profile = data[''] || {};
+      const container = document.getElementById('content');
+
+      const avatarHtml = createAvatar(profile.Name || '??', profile.Avatar);
+
+      container.innerHTML = `
+        <div class="profile-header">
+          ${avatarHtml}
+          <div class="user-info">
+            <h1>${profile.Name || 'Unknown User'}</h1>
+            <p><strong>NKID:</strong> ${profile.NKID || 'N/A'}</p>
+            <p><strong>Country:</strong> ${profile.CountryCode || 'N/A'}</p>
+            <p><strong>Guild ID:</strong> ${profile.GuildID || 'None'}</p>
+          </div>
+        </div>
+
+        <div class="stats">
+          <h2>Stats</h2>
+          <table>
+            <tr><th>Wins (Standard)</th><td>${profile.WinsStandard ?? 'N/A'}</td></tr>
+            <tr><th>Losses (Standard)</th><td>${profile.LossesStandard ?? 'N/A'}</td></tr>
+            <tr><th>Current Win Streak</th><td>${profile.CurrentWinStreak ?? 'N/A'}</td></tr>
+            <tr><th>Best Win Streak</th><td>${profile.BestWinStreak ?? 'N/A'}</td></tr>
+            <tr><th>Battlescore</th><td>${profile.Battlescore ?? 'N/A'}</td></tr>
+            <tr><th>Medallions Current</th><td>${profile.MedallionsCurrent?.toLocaleString() ?? 'N/A'}</td></tr>
+            <tr><th>Medallion Wins Total</th><td>${profile.MedallionWinsTotal?.toLocaleString() ?? 'N/A'}</td></tr>
+            <tr><th>Medallion Wins Weekly</th><td>${profile.MedallionWinsWeekly?.toLocaleString() ?? 'N/A'}</td></tr>
+            <tr><th>Current Leaderboard</th><td>${profile.CurrentLeaderboard || 'N/A'}</td></tr>
+          </table>
+
+          <div class="badges">
+            <h3>Badges</h3>
+            ${profile.Badges && profile.Badges.length
+              ? profile.Badges.map(b => 
+                  `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">${b.id}</span>`).join('')
+              : '<p>No badges found.</p>'
+            }
+          </div>
+
+          <div class="badges">
+            <h3>Featured Badge</h3>
+            ${profile.FeaturedBadge && profile.FeaturedBadge.id
+              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})">${profile.FeaturedBadge.id}</span>`
+              : '<p>No featured badge.</p>'
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function displayError(message) {
+      const container = document.getElementById('content');
+      container.innerHTML = `<div class="error">${message}</div>`;
+    }
+
+    async function init() {
+      const nkid = getQueryParam('id');
+      if (!nkid) {
+        displayError('No user ID provided in URL.');
+        return;
+      }
+
+      try {
+        const data = await fetchUserProfile(nkid);
+        displayProfile(data);
+      } catch (err) {
+        console.error(err);
+        displayError('Failed to load user profile.');
+      }
+    }
+
+    window.onload = init;
+  </script>
+
+</body>
+</html>
