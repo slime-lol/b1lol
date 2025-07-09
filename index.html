@@ -120,7 +120,7 @@
 
     function biweeksSinceBase() {
       // Season 1 start: Feb 18, 2017 14:00 GMT+4 → convert to UTC by subtracting 4 hours
-      const baseSeasonStart = new Date(Date.UTC(2017, 1, 15, 10, 0, 0)); // months 0-based, so 1=Feb
+      const baseSeasonStart = new Date(Date.UTC(2017, 2, 1, 10, 0, 0)); // months 0-based, so 1=Feb
       const now = new Date();
       const biweekMs = 14 * 24 * 60 * 60 * 1000;
       const diffBiweeks = Math.floor((now - baseSeasonStart) / biweekMs);
