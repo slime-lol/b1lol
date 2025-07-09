@@ -109,7 +109,7 @@
 
     async function fetchLeaderboard() {
       const weeks = weeksSinceBase();
-      document.getElementById("weeksSince").textContent = weeks;
+      document.getElementById("weeksSince").textContent = "WEEK #" + weeks;
       const url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${weeks}.json`;
 
       try {
