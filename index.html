@@ -100,112 +100,75 @@
   <ul id="leaderboard">Loading leaderboard...</ul>
 
   <script>
-    let currentMode = 'weekly'; // 'weekly' or 'rating'
-
+    let currentMode = 'weekly';
     const weeklyBtn = document.getElementById('weeklyBtn');
     const ratingBtn = document.getElementById('ratingBtn');
 
-    weeklyBtn.onclick = () => {
-      currentMode = 'weekly';
-      setActiveButton();
-      fetchLeaderboard();
-    };
+    weeklyBtn.onclick = () => { currentMode = 'weekly'; toggle(); };
+    ratingBtn.onclick = () => { currentMode = 'rating'; toggle(); };
 
-    ratingBtn.onclick = () => {
-      currentMode = 'rating';
-      setActiveButton();
-      fetchLeaderboard();
-    };
-
-    function setActiveButton() {
+    function toggle(){
       weeklyBtn.classList.toggle('active', currentMode === 'weekly');
       ratingBtn.classList.toggle('active', currentMode === 'rating');
+      fetchLeaderboard();
     }
 
-    function weeksSinceBase() {
-      const baseDate = new Date('2015-12-16T14:00:00+04:00');
-      const now = new Date();
-      const diffMs = now - baseDate;
-      return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000)) + 30;
+    // Same time functions...
+    function weeksSinceBase() { const base = new Date('2015-12-16T14:00:00+04:00'); return Math.floor((new Date() - base)/(7*24*60*60*1e3)) + 30; }
+    function biweeksSinceBase() { const base = new Date('2015-12-16T14:00:00+04:00'); return Math.floor((new Date() - base)/(14*24*60*60*1e3)); }
+    function getNextResetTime(){
+      const base = new Date('2015-12-16T14:00:00+04:00');
+      const count = weeksSinceBase() - 29;
+      return new Date(base.getTime() + count * 7*24*60*60*1e3);
     }
-
-    function biweeksSinceBase() {
-      const baseDate = new Date('2015-12-16T14:00:00+04:00');
-      const now = new Date();
-      const diffMs = now - baseDate;
-      return Math.floor(diffMs / (14 * 24 * 60 * 60 * 1000));
-    }
-
-    function getNextResetTime() {
-      const baseDate = new Date('2015-12-16T14:00:00+04:00');
-      const now = new Date();
-      const weekNumber = weeksSinceBase() - 29;
-      return new Date(baseDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000);
-    }
-
     function updateCountdown() {
-      const now = new Date();
-      const end = getNextResetTime();
-      const diff = end - now;
-
-      const totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      const pad = (n) => String(n).padStart(2, '0');
-      document.getElementById('timer').textContent =
-        `Next refresh in: ${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      const now = new Date(), end = getNextResetTime(), diff = end - now;
+      const s = Math.floor(diff/1e3), d = Math.floor(s/86400), h = Math.floor(s%86400/3600);
+      const m = Math.floor(s%3600/60), sec = s%60;
+      const pad = n => n.toString().padStart(2,'0');
+      document.getElementById('timer').textContent = `Next refresh in: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
     }
 
-    async function fetchLeaderboard() {
-      const list = document.getElementById('leaderboard');
-      const weekLabel = document.getElementById("weeksSince");
-      list.innerHTML = 'Loading leaderboard...';
-
+    async function fetchLeaderboard(){
+      const container = document.getElementById('leaderboard'),
+            label = document.getElementById('weeksSince');
+      container.textContent = 'Loading...';
       try {
-        let url = '';
-        let label = '';
-
-        if (currentMode === 'weekly') {
-          const weeks = weeksSinceBase();
-          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${weeks}.json`;
-          label = "WEEK #" + weeks;
+        let url, title;
+        if(currentMode === 'weekly'){
+          const w = weeksSinceBase();
+          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${w}.json`;
+          title = `WEEK #${w}`;
         } else {
-          const biweeks = biweeksSinceBase();
-          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${biweeks}:Rating.json`;
-          label = "BI-WEEK #" + biweeks;
+          const b = biweeksSinceBase();
+          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${b}:Rating.json`;
+          title = `RATING LADDER #${b}`;
         }
+        const res = await fetch(url);
+        const { error, data } = await res.json();
+        if(error) throw new Error(error);
+        const parsed = JSON.parse(data); // 🎯 double-JSON parsing
+        const entries = parsed.scores.equal;
 
-        const response = await fetch(url);
-        const json = await response.json();
-        const data = JSON.parse(json.data);
-        const entries = data.scores.equal;
-
-        weekLabel.textContent = label;
-        list.innerHTML = '';
-
-        entries.forEach(({ score, metadata }, index) => {
+        label.textContent = title;
+        container.innerHTML = '';
+        entries.forEach((e,i) => {
           const li = document.createElement('li');
-
           li.innerHTML = `
             <div class="left">
-              <span class="rank">#${index + 1}</span>
-              <span class="name">${metadata}</span>
+              <span class="rank">#${i+1}</span>
+              <span class="name">${e.metadata}</span>
             </div>
-            <span class="score">${score.toLocaleString()}</span>
-          `;
-
-          list.appendChild(li);
+            <span class="score">${e.score.toLocaleString()}</span>`;
+          container.appendChild(li);
         });
-
-      } catch (err) {
-        console.error('Failed to fetch leaderboard:', err);
-        list.textContent = 'Failed to load leaderboard data.';
+      } catch(err){
+        console.error(err);
+        container.textContent = 'Failed to load leaderboard.';
       }
     }
 
+    // Initialize
     fetchLeaderboard();
     updateCountdown();
     setInterval(updateCountdown, 1000);
