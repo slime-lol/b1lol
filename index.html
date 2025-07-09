@@ -129,25 +129,38 @@
 
 
 
-    function getNextResetTime() {
-      const base = new Date('2015-12-16T14:00:00+04:00');
-      const count = weeksSinceBase() - 29;
-      return new Date(base.getTime() + count * 7 * 24 * 60 * 60 * 1e3);
+    function getNextResetTime(mode) {
+      if (mode === 'rating') {
+        const base = new Date(Date.UTC(2017, 1, 15, 10, 0, 0)); // Feb 18, 2017 14:00 GMT+4
+        const biweekMs = 14 * 24 * 60 * 60 * 1e3;
+        const now = new Date();
+        const elapsed = now - base;
+        const nextBiweek = Math.ceil(elapsed / biweekMs);
+        return new Date(base.getTime() + nextBiweek * biweekMs);
+      } else {
+        const base = new Date('2015-12-16T14:00:00+04:00');
+        const weekMs = 7 * 24 * 60 * 60 * 1e3;
+        const count = weeksSinceBase() - 29;
+        return new Date(base.getTime() + count * weekMs);
+      }
     }
+
 
     function updateCountdown() {
       const now = new Date();
-      const end = getNextResetTime();
+      const end = getNextResetTime(currentMode);
       const diff = end - now;
       const s = Math.floor(diff / 1000);
       const d = Math.floor(s / 86400);
-      const h = Math.floor(s % 86400 / 3600);
-      const m = Math.floor(s % 3600 / 60);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
       const sec = s % 60;
       const pad = n => n.toString().padStart(2, '0');
+      const label = currentMode === 'weekly' ? "Next weekly reset in" : "Next season reset in";
       document.getElementById('timer').textContent =
-        `Next refresh in: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
-    }
+        `${label}: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
+      }
+
 
     async function fetchLeaderboard() {
       const container = document.getElementById('leaderboard');
