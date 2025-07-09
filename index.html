@@ -5,24 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Weekly Medallions Leaderboard</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { margin-bottom: 10px; }
-    ul { list-style-type: none; padding: 0; }
-    li { padding: 6px 0; border-bottom: 1px solid #eee; }
-    .score { font-weight: bold; margin-right: 10px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #001f3f; /* Navy blue */
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    #timer {
+      font-size: 1rem;
+      margin-bottom: 20px;
+      color: #dddddd;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-width: 600px;
+    }
+
+    li {
+      background-color: rgba(173, 216, 230, 0.3); /* Light blue with transparency */
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li:nth-child(even) {
+      background-color: rgba(173, 216, 230, 0.2); /* Zebra striping */
+    }
+
+    .left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .rank {
+      font-weight: bold;
+      color: #ffd700;
+      width: 2em;
+      text-align: right;
+    }
+
+    .name {
+      font-size: 1rem;
+      color: #ffffff;
+    }
+
+    .score {
+      font-weight: bold;
+      color: #90ee90;
+    }
   </style>
 </head>
 <body>
   <h1>Weekly Medallions Leaderboard</h1>
-  <ul id="leaderboard"></ul>
+  <div id="timer">Loading timer...</div>
+  <ul id="leaderboard">Loading leaderboard...</ul>
 
   <script>
-    // Calculate number of weeks since Dec 16, 2015 (Wednesday)
     function weeksSinceBase() {
-      const baseDate = new Date('2015-12-16T14:00:00+04:00'); // 2 PM GST (GMT+4)
+      const baseDate = new Date('2015-12-16T14:00:00+04:00');
       const now = new Date();
       const diffMs = now - baseDate;
       return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+    }
+
+    function getNextResetTime() {
+      const baseDate = new Date('2015-12-16T14:00:00+04:00');
+      const now = new Date();
+      const weekNumber = weeksSinceBase() + 1;
+      const nextReset = new Date(baseDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000);
+      return nextReset;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const end = getNextResetTime();
+      const diff = end - now;
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const pad = (n) => String(n).padStart(2, '0');
+      document.getElementById('timer').textContent =
+        `Next refresh in: ${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
 
     async function fetchLeaderboard() {
@@ -32,17 +113,23 @@
       try {
         const response = await fetch(url);
         const json = await response.json();
-
-        // The actual data is a JSON string inside json.data
         const data = JSON.parse(json.data);
         const entries = data.scores.equal;
 
         const list = document.getElementById('leaderboard');
         list.innerHTML = '';
 
-        entries.forEach(({ score, metadata }) => {
+        entries.forEach(({ score, metadata }, index) => {
           const li = document.createElement('li');
-          li.innerHTML = `<span class="score">${score.toLocaleString()}</span> <span class="name">${metadata}</span>`;
+
+          li.innerHTML = `
+            <div class="left">
+              <span class="rank">#${index + 1}</span>
+              <span class="name">${metadata}</span>
+            </div>
+            <span class="score">${score.toLocaleString()}</span>
+          `;
+
           list.appendChild(li);
         });
 
@@ -52,7 +139,10 @@
       }
     }
 
+    // Initialize
     fetchLeaderboard();
+    updateCountdown();
+    setInterval(updateCountdown, 1000); // update every second
   </script>
 </body>
 </html>
