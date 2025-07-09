@@ -159,7 +159,8 @@
       const label = currentMode === 'weekly' ? "Next weekly reset in" : "Next season reset in";
       document.getElementById('timer').textContent =
         `${label}: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
-      }
+    }
+
 
 
     async function fetchLeaderboard() {
