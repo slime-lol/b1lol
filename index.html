@@ -119,16 +119,14 @@
     }
 
     function biweeksSinceBase() {
-      const knownSeasonNumber = 218;
-      // Season 218 start: July 9, 2025, 14:00 GMT+4
-      // We'll convert to UTC to avoid timezone issues:
-      // GMT+4 means subtract 4 hours to get UTC
-      const knownSeasonStart = new Date(Date.UTC(2025, 6, 9, 10, 0, 0)); // Months are 0-based, so 6 = July
+      // Season 1 start: Feb 18, 2017 14:00 GMT+4 → convert to UTC by subtracting 4 hours
+      const baseSeasonStart = new Date(Date.UTC(2017, 1, 15, 10, 0, 0)); // months 0-based, so 1=Feb
       const now = new Date();
       const biweekMs = 14 * 24 * 60 * 60 * 1000;
-      const diffBiweeks = Math.floor((now - knownSeasonStart) / biweekMs);
-      return knownSeasonNumber + diffBiweeks;
+      const diffBiweeks = Math.floor((now - baseSeasonStart) / biweekMs);
+      return 1 + diffBiweeks;
     }
+
 
 
     function getNextResetTime() {
