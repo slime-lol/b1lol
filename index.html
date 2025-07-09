@@ -79,7 +79,7 @@
       const baseDate = new Date('2015-12-16T14:00:00+04:00');
       const now = new Date();
       const diffMs = now - baseDate;
-      return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+      return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000)) + 1;
     }
 
     function getNextResetTime() {
