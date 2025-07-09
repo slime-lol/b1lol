@@ -15,7 +15,7 @@
   <meta name="twitter:description" content="The hub of info for Bloons TD Battles." />
   <meta name="twitter:image" content="https://b1data.vercel.app/btdb1.jpg" />
   
-  <title>User Profile</title>
+  <title>B1Data - User Profile</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -65,6 +65,11 @@
       color: #7FDBFF;
       margin-top: 0;
     }
+
+    a {
+      color: #ffffff;
+    }
+    
     table {
       width: 100%;
       border-collapse: collapse;
@@ -105,7 +110,6 @@
     <div class="loading">Loading user profile...</div>
   </div>
 
-  <h1><a href="index.html">B1Data</a></h1>
   <script>
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -136,6 +140,7 @@
       const avatarHtml = createAvatar(profile.Name || '??', profile.Avatar);
 
       container.innerHTML = `
+        <h1><a href="index.html">B1Data</a></h1>
         <div class="profile-header">
           ${avatarHtml}
           <div class="user-info">
