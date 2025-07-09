@@ -124,7 +124,7 @@
       const now = new Date();
       const biweekMs = 14 * 24 * 60 * 60 * 1000;
       const diffBiweeks = Math.floor((now - baseSeasonStart) / biweekMs);
-      return Math.abs(1 - diffBiweeks);
+      return Math.abs(1 - diffBiweeks) + 1;
     }
 
 
