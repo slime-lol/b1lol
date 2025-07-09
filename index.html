@@ -86,7 +86,7 @@
     function getNextResetTime() {
       const baseDate = new Date('2015-12-16T14:00:00+04:00');
       const now = new Date();
-      const weekNumber = weeksSinceBase() + 1;
+      const weekNumber = weeksSinceBase() - 29;
       const nextReset = new Date(baseDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000);
       return nextReset;
     }
