@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weekly Medallions Leaderboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 10px; }
+    ul { list-style-type: none; padding: 0; }
+    li { padding: 6px 0; border-bottom: 1px solid #eee; }
+    .score { font-weight: bold; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Weekly Medallions Leaderboard</h1>
+  <ul id="leaderboard"></ul>
+
+  <script>
+    // Calculate number of weeks since Dec 16, 2015 (Wednesday)
+    function weeksSinceBase() {
+      const baseDate = new Date('2015-12-16T14:00:00+04:00'); // 2 PM GST (GMT+4)
+      const now = new Date();
+      const diffMs = now - baseDate;
+      return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+    }
+
+    async function fetchLeaderboard() {
+      const weeks = weeksSinceBase();
+      const url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${weeks}.json`;
+
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+
+        // The actual data is a JSON string inside json.data
+        const data = JSON.parse(json.data);
+        const entries = data.scores.equal;
+
+        const list = document.getElementById('leaderboard');
+        list.innerHTML = '';
+
+        entries.forEach(({ score, metadata }) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="score">${score.toLocaleString()}</span> <span class="name">${metadata}</span>`;
+          list.appendChild(li);
+        });
+
+      } catch (err) {
+        console.error('Failed to fetch leaderboard:', err);
+        document.getElementById('leaderboard').textContent = 'Failed to load leaderboard data.';
+      }
+    }
+
+    fetchLeaderboard();
+  </script>
+</body>
+</html>
