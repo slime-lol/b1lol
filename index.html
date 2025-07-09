@@ -190,13 +190,15 @@
 
         label.textContent = title;
         container.innerHTML = '';
+
         entries.forEach((e, i) => {
           const score = isRating ? e.score / 10 : e.score;
+          const nkid = e.userID; // your NKID here
           const li = document.createElement('li');
           li.innerHTML = `
             <div class="left">
               <span class="rank">#${i + 1}</span>
-              <span class="name">${e.metadata}</span>
+              <a href="user.html?id=${nkid}" class="name">${e.metadata}</a>
             </div>
             <span class="score">${score.toLocaleString()}</span>`;
           container.appendChild(li);
@@ -206,6 +208,7 @@
         container.textContent = 'Failed to load leaderboard.';
       }
     }
+
 
     fetchLeaderboard();
     setInterval(updateCountdown, 1000);
