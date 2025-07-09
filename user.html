@@ -127,7 +127,7 @@
           ${avatarHtml}
           <div class="user-info">
             <h1>${profile.Name || 'Unknown User'}</h1>
-            <p><strong>NKID:</strong> ${profile.NKID || 'N/A'}</p>
+            <p><strong>Ninja Kiwi ID:</strong> ${profile.NKID || 'N/A'}</p>
             <p><strong>Country:</strong> ${profile.CountryCode || 'N/A'}</p>
             <p><strong>Guild ID:</strong> ${profile.GuildID || 'None'}</p>
           </div>
@@ -136,25 +136,15 @@
         <div class="stats">
           <h2>Stats</h2>
           <table>
-            <tr><th>Wins (Standard)</th><td>${profile.WinsStandard ?? 'N/A'}</td></tr>
-            <tr><th>Losses (Standard)</th><td>${profile.LossesStandard ?? 'N/A'}</td></tr>
+            <tr><th>Wins</th><td>${profile.WinsStandard ?? 'N/A'}</td></tr>
+            <tr><th>Losses</th><td>${profile.LossesStandard ?? 'N/A'}</td></tr>
             <tr><th>Current Win Streak</th><td>${profile.CurrentWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Best Win Streak</th><td>${profile.BestWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Battlescore</th><td>${profile.Battlescore ?? 'N/A'}</td></tr>
-            <tr><th>Medallions Current</th><td>${profile.MedallionsCurrent?.toLocaleString() ?? 'N/A'}</td></tr>
-            <tr><th>Medallion Wins Total</th><td>${profile.MedallionWinsTotal?.toLocaleString() ?? 'N/A'}</td></tr>
-            <tr><th>Medallion Wins Weekly</th><td>${profile.MedallionWinsWeekly?.toLocaleString() ?? 'N/A'}</td></tr>
-            <tr><th>Current Leaderboard</th><td>${profile.CurrentLeaderboard || 'N/A'}</td></tr>
+            <tr><th>Medallions</th><td>${profile.MedallionsCurrent?.toLocaleString() ?? 'N/A'}</td></tr>
+            <tr><th>Total Medallions from Wins</th><td>${profile.MedallionWinsTotal?.toLocaleString() ?? 'N/A'}</td></tr>
+            <tr><th>Medallions this Week</th><td>${profile.MedallionWinsWeekly?.toLocaleString() ?? 'N/A'}</td></tr>
           </table>
-
-          <div class="badges">
-            <h3>Badges</h3>
-            ${profile.Badges && profile.Badges.length
-              ? profile.Badges.map(b => 
-                  `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">${b.id}</span>`).join('')
-              : '<p>No badges found.</p>'
-            }
-          </div>
 
           <div class="badges">
             <h3>Featured Badge</h3>
@@ -164,6 +154,15 @@
             }
           </div>
         </div>
+
+          <div class="badges">
+            <h3>Badges</h3>
+            ${profile.Badges && profile.Badges.length
+              ? profile.Badges.map(b => 
+                  `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">${b.id}</span>`).join('')
+              : '<p>No badges found.</p>'
+            }
+          </div>
       `;
     }
 
