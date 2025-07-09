@@ -119,9 +119,17 @@
     }
 
     function biweeksSinceBase() {
-      const base = new Date('2015-12-16T14:00:00+04:00');
-      return Math.floor((new Date() - base) / (14 * 24 * 60 * 60 * 1e3));
+      const knownSeasonNumber = 218;
+      // Season 218 start: July 9, 2025, 14:00 GMT+4
+      // We'll convert to UTC to avoid timezone issues:
+      // GMT+4 means subtract 4 hours to get UTC
+      const knownSeasonStart = new Date(Date.UTC(2025, 6, 9, 10, 0, 0)); // Months are 0-based, so 6 = July
+      const now = new Date();
+      const biweekMs = 14 * 24 * 60 * 60 * 1000;
+      const diffBiweeks = Math.floor((now - knownSeasonStart) / biweekMs);
+      return knownSeasonNumber + diffBiweeks;
     }
+
 
     function getNextResetTime() {
       const base = new Date('2015-12-16T14:00:00+04:00');
@@ -157,7 +165,7 @@
         } else {
           const b = biweeksSinceBase();
           url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${b}:Rating.json`;
-          title = `RATING LADDER #${b}`;
+          title = `SEASON #${b}`;
           isRating = true;
         }
 
