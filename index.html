@@ -3,19 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weekly Medallions Leaderboard</title>
+  <title>Leaderboard Viewer</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #001f3f; /* Navy blue */
+      background-color: #001f3f;
       color: #ffffff;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #0074D9;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button.active {
+      background-color: #FF851B;
     }
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     #timer {
@@ -32,7 +52,7 @@
     }
 
     li {
-      background-color: rgba(173, 216, 230, 0.3); /* Light blue with transparency */
+      background-color: rgba(173, 216, 230, 0.3);
       padding: 12px 16px;
       margin-bottom: 10px;
       border-radius: 8px;
@@ -42,7 +62,7 @@
     }
 
     li:nth-child(even) {
-      background-color: rgba(173, 216, 230, 0.2); /* Zebra striping */
+      background-color: rgba(173, 216, 230, 0.2);
     }
 
     .left {
@@ -70,12 +90,38 @@
   </style>
 </head>
 <body>
-  <h1>Weekly Medallions Leaderboard</h1>
+  <h1>Leaderboard Viewer</h1>
+  <nav>
+    <button id="weeklyBtn" class="active">Global</button>
+    <button id="ratingBtn">Prestige</button>
+  </nav>
   <h2 id="weeksSince"></h2>
   <div id="timer">Loading timer...</div>
   <ul id="leaderboard">Loading leaderboard...</ul>
 
   <script>
+    let currentMode = 'weekly'; // 'weekly' or 'rating'
+
+    const weeklyBtn = document.getElementById('weeklyBtn');
+    const ratingBtn = document.getElementById('ratingBtn');
+
+    weeklyBtn.onclick = () => {
+      currentMode = 'weekly';
+      setActiveButton();
+      fetchLeaderboard();
+    };
+
+    ratingBtn.onclick = () => {
+      currentMode = 'rating';
+      setActiveButton();
+      fetchLeaderboard();
+    };
+
+    function setActiveButton() {
+      weeklyBtn.classList.toggle('active', currentMode === 'weekly');
+      ratingBtn.classList.toggle('active', currentMode === 'rating');
+    }
+
     function weeksSinceBase() {
       const baseDate = new Date('2015-12-16T14:00:00+04:00');
       const now = new Date();
@@ -83,12 +129,18 @@
       return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000)) + 30;
     }
 
+    function biweeksSinceBase() {
+      const baseDate = new Date('2015-12-16T14:00:00+04:00');
+      const now = new Date();
+      const diffMs = now - baseDate;
+      return Math.floor(diffMs / (14 * 24 * 60 * 60 * 1000));
+    }
+
     function getNextResetTime() {
       const baseDate = new Date('2015-12-16T14:00:00+04:00');
       const now = new Date();
       const weekNumber = weeksSinceBase() - 29;
-      const nextReset = new Date(baseDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000);
-      return nextReset;
+      return new Date(baseDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000);
     }
 
     function updateCountdown() {
@@ -108,17 +160,30 @@
     }
 
     async function fetchLeaderboard() {
-      const weeks = weeksSinceBase();
-      document.getElementById("weeksSince").textContent = "WEEK #" + weeks;
-      const url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${weeks}.json`;
+      const list = document.getElementById('leaderboard');
+      const weekLabel = document.getElementById("weeksSince");
+      list.innerHTML = 'Loading leaderboard...';
 
       try {
+        let url = '';
+        let label = '';
+
+        if (currentMode === 'weekly') {
+          const weeks = weeksSinceBase();
+          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${weeks}.json`;
+          label = "WEEK #" + weeks;
+        } else {
+          const biweeks = biweeksSinceBase();
+          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${biweeks}:Rating.json`;
+          label = "BI-WEEK #" + biweeks;
+        }
+
         const response = await fetch(url);
         const json = await response.json();
         const data = JSON.parse(json.data);
         const entries = data.scores.equal;
 
-        const list = document.getElementById('leaderboard');
+        weekLabel.textContent = label;
         list.innerHTML = '';
 
         entries.forEach(({ score, metadata }, index) => {
@@ -137,14 +202,13 @@
 
       } catch (err) {
         console.error('Failed to fetch leaderboard:', err);
-        document.getElementById('leaderboard').textContent = 'Failed to load leaderboard data.';
+        list.textContent = 'Failed to load leaderboard data.';
       }
     }
 
-    // Initialize
     fetchLeaderboard();
     updateCountdown();
-    setInterval(updateCountdown, 1000); // update every second
+    setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
