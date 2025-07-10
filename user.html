@@ -143,6 +143,13 @@
 
       const avatarHtml = createAvatar(profile.Name || '??', profile.Avatar);
 
+      function calculateWinRate(wins, losses) {
+        const totalGames = wins + losses;
+        if (totalGames === 0) return 0; // Avoid division by zero
+        return wins / totalGames;
+      }
+
+
       container.innerHTML = `
         <h1><a href="index.html">B1Data</a></h1>
         <div class="profile-header">
@@ -158,8 +165,7 @@
         <div class="stats">
           <h2>Stats</h2>
           <table>
-            <tr><th>Wins</th><td>${profile.WinsStandard ?? 'N/A'}</td></tr>
-            <tr><th>Losses</th><td>${profile.LossesStandard ?? 'N/A'}</td></tr>
+            <tr><th>Win Rate</th><td>${profile.WinsStandard + "/" + profile.LossesStandard + "(" + calculateWinRate(profile.WinsStandard, profile.LossesStandard) * 100 + ")"  ?? 'N/A'}</td></tr>
             <tr><th>Current Win Streak</th><td>${profile.CurrentWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Best Win Streak</th><td>${profile.BestWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Battlescore</th><td>${profile.Battlescore ?? 'N/A'}</td></tr>
