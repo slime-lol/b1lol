@@ -167,7 +167,7 @@
           <div class="badges">
             <h3>Featured Badge</h3>
             ${profile.FeaturedBadge && profile.FeaturedBadge.id
-              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})">${profile.FeaturedBadge.id}</span>`
+              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})"><img class="${profile.FeaturedBadge.id}.png"></span>`
               : '<p>No featured badge.</p>'
             }
           </div>
