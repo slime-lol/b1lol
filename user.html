@@ -65,11 +65,9 @@
       color: #7FDBFF;
       margin-top: 0;
     }
-
     a {
       color: #ffffff;
     }
-    
     table {
       width: 100%;
       border-collapse: collapse;
@@ -95,6 +93,12 @@
       border-radius: 12px;
       margin: 4px 4px 4px 0;
       font-size: 0.85rem;
+    }
+    .badge-image {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      object-fit: contain;
     }
     .loading, .error {
       text-align: center;
@@ -168,24 +172,25 @@
             <h3>Featured Badge</h3>
             ${profile.FeaturedBadge && profile.FeaturedBadge.id
               ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})">
-                  <img src="badge_images/${profile.FeaturedBadge.id}.png" alt="${profile.FeaturedBadge.id}" class="badge-image" />
-              </span>`
-            : '<p>No featured badge.</p>'
-          }
-
+                  <img src="badge_images/${profile.FeaturedBadge.id}.png" alt="${profile.FeaturedBadge.id}" class="badge-image" loading="lazy" />
+                </span>`
+              : '<p>No featured badge.</p>'
+            }
           </div>
-        </div>
 
           <div class="badges">
             <h3>Badges</h3>
-            ${profile.Badges && profile.Badges.length
+            ${
+              profile.Badges && profile.Badges.length
               ? profile.Badges.map(b => 
                 `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">
-                   <img src="badge_images/${b.id}.png" alt="${b.id}" class="badge-image" />
-                </span>`
+                   <img src="badge_images/${b.id}.png" alt="${b.id}" class="badge-image" loading="lazy" />
+                 </span>`
+              ).join('')
               : '<p>No badges found.</p>'
             }
           </div>
+        </div>
       `;
     }
 
