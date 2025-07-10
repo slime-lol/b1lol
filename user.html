@@ -165,7 +165,7 @@
         <div class="stats">
           <h2>Stats</h2>
           <table>
-            <tr><th>Win Rate</th><td>${profile.WinsStandard + "/" + profile.LossesStandard + "(" + calculateWinRate(profile.WinsStandard, profile.LossesStandard) * 100 + ")"  ?? 'N/A'}</td></tr>
+            <tr><th>Win Rate</th><td>${profile.WinsStandard + "/" + profile.LossesStandard + "(" + (calculateWinRate(profile.WinsStandard, profile.LossesStandard) * 100).toFixed(2) + "%)"  ?? 'N/A'}</td></tr>
             <tr><th>Current Win Streak</th><td>${profile.CurrentWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Best Win Streak</th><td>${profile.BestWinStreak ?? 'N/A'}</td></tr>
             <tr><th>Battlescore</th><td>${profile.Battlescore ?? 'N/A'}</td></tr>
