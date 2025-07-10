@@ -167,9 +167,12 @@
           <div class="badges">
             <h3>Featured Badge</h3>
             ${profile.FeaturedBadge && profile.FeaturedBadge.id
-              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})"><img class="${profile.FeaturedBadge.id}.png"></span>`
-              : '<p>No featured badge.</p>'
-            }
+              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank}, Score: ${profile.FeaturedBadge.score.toLocaleString()})">
+                  <img src="badge_images/${profile.FeaturedBadge.id}.png" alt="${profile.FeaturedBadge.id}" class="badge-image" />
+              </span>`
+            : '<p>No featured badge.</p>'
+          }
+
           </div>
         </div>
 
@@ -177,7 +180,9 @@
             <h3>Badges</h3>
             ${profile.Badges && profile.Badges.length
               ? profile.Badges.map(b => 
-                  `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">${b.id}</span>`).join('')
+                `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">
+                   <img src="badge_images/${b.id}.png" alt="${b.id}" class="badge-image" />
+                </span>`
               : '<p>No badges found.</p>'
             }
           </div>
