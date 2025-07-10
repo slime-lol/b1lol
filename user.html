@@ -183,7 +183,7 @@
             ${
               profile.Badges && profile.Badges.length
               ? profile.Badges.map(b => 
-                `<span class="badge" title="${b.id} (Rank: ${b.rank}, Score: ${b.score.toLocaleString()})">
+                `<span class="badge" title="${b.id} (Rank: ${b.rank + 1}, Score: ${b.score.toLocaleString()})">
                    <img src="badge_images/${b.id}.png" alt="${b.id}" class="badge-image" loading="lazy" />
                  </span>`
               ).join('')
