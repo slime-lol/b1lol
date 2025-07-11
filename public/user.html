@@ -155,7 +155,7 @@
       }
 
       let featuredBadgeScore = profile.FeaturedBadge.score;
-      if ("prestige" in profile.FeaturedBadge.id) {
+      if (profile.featuredBadge.id.toLowerCase().includes('prestige')) {
         featuredBadgeScore = profile.FeaturedBadge.score / 10;
       }
 
