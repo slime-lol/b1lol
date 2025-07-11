@@ -19,9 +19,9 @@
       font-family: 'OETZTYP', sans-serif !important;
       background-color: #19003f;
       color: #eee;
+      overflow-x: hidden;
       margin: 0;
       padding: 20px;
-      max-width: 600px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -38,50 +38,85 @@
       color: #ffffff;
     }
 
-    nav {
-      justify-content: center;
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(to bottom, #0074D9, #0055aa);
+  padding: 6px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid #003d80;
+  font-family: 'OETZTYP', sans-serif;
+  gap: 4px;
+}
 
-    button {
-      background-color: #0074D9;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.nav-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 2px 0;
+}
 
-    button.active {
-      background-color: #4e8fd5;
-    }
+.navbar h1 a {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease-in-out;
+}
+.navbar h1 a:hover {
+  color: #ffd700;
+}
 
-    h1 {
-      justify-self: center;
-      font-size: 2rem;
-      margin-bottom: 5px;
-    }
-    h2 {
-      justify-self: center;
-      font-size: 1.5rem;
-      margin-bottom: 5px;
-    }
+.navbar button {
+  background-color: #004a99;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  margin: -3px;
+  margin-top: -30px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
-    #timer {
-      font-size: 1rem;
-      justify-self: center;
-      margin-bottom: 20px;
-      color: #dddddd;
-    }
+.navbar button:hover {
+  background-color: #0066cc;
+}
+
+.navbar button.active {
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+}
+
+.navbar h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #eeeeee;
+  margin: 0;
+}
+
+#timer {
+  font-size: 0.9rem;
+  color: #cccccc;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+
 
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
-      max-width: 600px;
+      justify-self: center;
     }
 
     li {
@@ -92,6 +127,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      width: 70vw;
     }
 
     li:nth-child(even) {
@@ -112,29 +148,41 @@
     }
 
     .name {
-      font-size: 1rem;
+      font-size: 1.25rem;
+      font-weight: bold;
       color: #ffffff;
     }
 
     .score {
       font-weight: bold;
-      color: #90ee90;
+      color: #ffd700;
     }
 
     #badge {
       width: 32px;
+      vertical-align: middle;
     }
   </style>
 </head>
 <body>
-  <h1><a href="index.html">B1Data</a></h1>
-  <nav>
-    <button id="weeklyBtn" class="active">Global</button>
-    <button id="ratingBtn">Prestige</button>
-  </nav>
-  <h2 id="weeksSince"></h2>
-  <div id="timer">Loading timer...</div>
-  <ul id="leaderboard">Loading leaderboard...</ul>
+  <div class="navbar">
+    <div class="nav-item">
+      <h1><a href="index.html">B1Data</a></h1>
+    </div>
+    <div class="nav-item">
+      <button id="weeklyBtn" class="active">Global</button>
+      <button id="ratingBtn">Prestige</button>
+    </div>
+    <div class="nav-item">
+      <h2 id="weeksSince"></h2>
+    </div>
+    <div class="nav-item">
+      <div id="timer">Loading timer...</div>
+    </div>
+  </div>
+  <div>
+    <ul id="leaderboard">Loading leaderboard...</ul>
+  </div>
 
   <script>
     let currentMode = 'weekly';
@@ -278,3 +326,4 @@
   </script>
 </body>
 </html>
+
