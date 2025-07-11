@@ -129,7 +129,7 @@
 
     async function fetchUserProfile(nkid) {
       const url = `https://priority-static-api.nkstatic.com/storage/static/2/${nkid}/PublicProfile.save`;
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error('Network response was not ok');
       return res.json();
     }
@@ -198,7 +198,7 @@
             ${
               profile.Badges && profile.Badges.length
                 ? profile.Badges.map(b => {
-                    const score = b.id.includes('prestige') ? b.score / 10 : b.score;
+                    const score = b.id.toLowerCase().includes('prestige') ? b.score / 10 : b.score;
                     return `
                       <span class="badge" title="${b.id} (Rank: ${b.rank + 1}, Score: ${score.toLocaleString()})">
                         <img src="../badge_images/${b.id}.png" alt="${b.id}" class="badge-image" loading="lazy" />
@@ -206,7 +206,6 @@
                   }).join('')
                 : '<p>No badges found.</p>'
             }
-
           </div>
         </div>
       `;
