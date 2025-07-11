@@ -154,6 +154,10 @@
         return wins / totalGames;
       }
 
+      const featuredBadgeScore = profile.FeaturedBadge.score;
+      if ("prestige" in profile.FeaturedBadge.id) {
+        featuredBadgeScore = profile.FeaturedBadge.score / 10;
+      }
 
       container.innerHTML = `
         <h1><a href="index.html">B1Data</a></h1>
@@ -182,7 +186,7 @@
           <div class="badges">
             <h3>Featured Badge</h3>
             ${profile.FeaturedBadge && profile.FeaturedBadge.id
-              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank + 1}, Score: ${profile.FeaturedBadge.score.toLocaleString()})">
+              ? `<span class="badge" title="${profile.FeaturedBadge.id} (Rank: ${profile.FeaturedBadge.rank + 1}, Score: ${featuredBadgeScore.toLocaleString()})">
                   <img src="../badge_images/${profile.FeaturedBadge.id}.png" alt="${profile.FeaturedBadge.id}" class="badge-image" loading="lazy" />
                 </span>`
               : '<p>No featured badge.</p>'
@@ -193,13 +197,16 @@
             <h3>Badges</h3>
             ${
               profile.Badges && profile.Badges.length
-              ? profile.Badges.map(b => 
-                `<span class="badge" title="${b.id} (Rank: ${b.rank + 1}, Score: ${b.score.toLocaleString()})">
-                   <img src="../badge_images/${b.id}.png" alt="${b.id}" class="badge-image" loading="lazy" />
-                 </span>`
-              ).join('')
-              : '<p>No badges found.</p>'
+                ? profile.Badges.map(b => {
+                    const score = b.id.includes('prestige') ? b.score / 10 : b.score;
+                    return `
+                      <span class="badge" title="${b.id} (Rank: ${b.rank + 1}, Score: ${score.toLocaleString()})">
+                        <img src="../badge_images/${b.id}.png" alt="${b.id}" class="badge-image" loading="lazy" />
+                      </span>`;
+                  }).join('')
+                : '<p>No badges found.</p>'
             }
+
           </div>
         </div>
       `;
