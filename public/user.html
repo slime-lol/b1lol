@@ -154,7 +154,7 @@
         return wins / totalGames;
       }
 
-      const featuredBadgeScore = profile.FeaturedBadge.score;
+      let featuredBadgeScore = profile.FeaturedBadge.score;
       if ("prestige" in profile.FeaturedBadge.id) {
         featuredBadgeScore = profile.FeaturedBadge.score / 10;
       }
