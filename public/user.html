@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta property="og:title" content="B1Data - User Page" />
+  <meta property="og:title" content="B1Data - Home Page" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://b1data.vercel.app/user.html" />
+  <meta property="og:url" content="https://b1data.vercel.app/index.html" />
   <meta property="og:image" content="https://b1data.vercel.app/btdb1.jpg" />
   <meta property="og:description" content="The hub of info for Bloons TD Battles." />
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="B1Data - User Page" />
+  <meta name="twitter:title" content="B1Data - Home Page" />
   <meta name="twitter:description" content="The hub of info for Bloons TD Battles." />
   <meta name="twitter:image" content="https://b1data.vercel.app/btdb1.jpg" />
   
@@ -27,7 +26,7 @@
     
     body {
       font-family: 'OETZTYP', sans-serif !important;
-      background-color: #001f3f;
+      background-color: #19003f;
       color: #eee;
       margin: 0;
       padding: 20px;
@@ -36,7 +35,7 @@
       margin-right: auto;
     }
     h1 {
-      color: #ff851b;
+      color: #ddb6e6;
       margin-bottom: 5px;
     }
     .profile-header {
@@ -70,7 +69,7 @@
       border-radius: 8px;
     }
     .stats h2 {
-      color: #7FDBFF;
+      color: #ce7fff;
       margin-top: 0;
     }
     a {
@@ -87,7 +86,7 @@
       text-align: left;
     }
     th {
-      color: #ff851b;
+      color: #ffffff;
       width: 40%;
     }
     .badges {
@@ -95,7 +94,7 @@
     }
     .badge {
       display: inline-block;
-      background-color: #0074D9;
+      background-color: #4f0087;
       color: white;
       padding: 5px 12px;
       border-radius: 12px;
@@ -136,10 +135,8 @@
     }
 
     function createAvatar(name, avatarNum) {
-      // Placeholder avatar with initials
       if (avatarNum) {
-        // Optional: If you have avatar images mapped, insert logic here
-        // For now fallback to initials
+        // do nothing (no avatars yet)
       }
       const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
       return `<div class="avatar">${initials}</div>`;
@@ -153,7 +150,7 @@
 
       function calculateWinRate(wins, losses) {
         const totalGames = wins + losses;
-        if (totalGames === 0) return 0; // Avoid division by zero
+        if (totalGames === 0) return 0;
         return wins / totalGames;
       }
 

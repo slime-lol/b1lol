@@ -9,7 +9,6 @@
   <meta property="og:image" content="https://b1data.vercel.app/btdb1.jpg" />
   <meta property="og:description" content="The hub of info for Bloons TD Battles." />
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="B1Data - Home Page" />
   <meta name="twitter:description" content="The hub of info for Bloons TD Battles." />
@@ -18,7 +17,7 @@
   <style>
     body {
       font-family: 'OETZTYP', sans-serif !important;
-      background-color: #001f3f;
+      background-color: #19003f;
       color: #eee;
       margin: 0;
       padding: 20px;
@@ -35,6 +34,7 @@
     }
 
     a {
+      text-decoration: none;
       color: #ffffff;
     }
 
@@ -151,8 +151,7 @@
     }
 
     function biweeksSinceBase() {
-      // Season 1 start: Feb 18, 2017 14:00 GMT+4 → convert to UTC by subtracting 4 hours
-      const baseSeasonStart = new Date(Date.UTC(2017, 2, 1, 10, 0, 0)); // months 0-based, so 1=Feb
+      const baseSeasonStart = new Date(Date.UTC(2017, 2, 1, 10, 0, 0));
       const now = new Date();
       const biweekMs = 14 * 24 * 60 * 60 * 1000;
       const diffBiweeks = Math.floor((now - baseSeasonStart) / biweekMs);
@@ -163,7 +162,7 @@
 
     function getNextResetTime(mode) {
       if (mode === 'rating') {
-        const base = new Date(Date.UTC(2017, 1, 15, 10, 0, 0)); // Feb 18, 2017 14:00 GMT+4
+        const base = new Date(Date.UTC(2017, 1, 15, 10, 0, 0));
         const biweekMs = 14 * 24 * 60 * 60 * 1e3;
         const now = new Date();
         const elapsed = now - base;
@@ -224,7 +223,7 @@
 
         entries.forEach((e, i) => {
           const score = isRating ? e.score / 10 : e.score;
-          const nkid = e.userID; // your NKID here
+          const nkid = e.userID;
           const li = document.createElement('li');
           let rank = 100;
           if (i === 0) {
