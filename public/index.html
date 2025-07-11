@@ -18,11 +18,13 @@
   <style>
     body {
       font-family: 'OETZTYP', sans-serif !important;
+      background-color: #001f3f;
+      color: #eee;
       margin: 0;
       padding: 20px;
-      justify-content: center;
-      background-color: #001f3f;
-      color: #ffffff;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     @font-face {
@@ -37,6 +39,7 @@
     }
 
     nav {
+      justify-content: center;
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
@@ -53,10 +56,11 @@
     }
 
     button.active {
-      background-color: #FF851B;
+      background-color: #4e8fd5;
     }
 
     h1 {
+      justify-self: center;
       font-size: 2rem;
       margin-bottom: 5px;
     }
@@ -109,6 +113,10 @@
     .score {
       font-weight: bold;
       color: #90ee90;
+    }
+
+    #badge {
+      width: 32px;
     }
   </style>
 </head>
@@ -218,9 +226,36 @@
           const score = isRating ? e.score / 10 : e.score;
           const nkid = e.userID; // your NKID here
           const li = document.createElement('li');
+          let rank = 100;
+          if (i === 0) {
+            rank = ('black_diamond');
+          } else if (i === 1) {
+            rank = ('red_diamond');
+          } else if (i === 2) {
+            rank = ('diamond');
+          } else if (i < 100) {
+            rank = ('gold');
+          }
+           if (currentMode === 'rating') {
+            if (i === 0) {
+              rank = ('black_diamond_prestige');
+            } else if (i === 1) {
+              rank = ('red_diamond_prestige');
+            } else if (i === 2) {
+              rank = ('diamond_prestige');
+            } else if (i < 10) {
+              rank = ('gold_black_diamond_prestige');
+            } else if (i < 25) {
+              rank = ('gold_red_diamond_prestige');
+            } else if (i < 100) {
+              rank = ('gold_diamond_prestige');
+            }
+          }
+          
           li.innerHTML = `
             <div class="left">
               <span class="rank">#${i + 1}</span>
+              <img src="badge_images/${rank}.png" alt="badge" id="badge">
               <a href="user.html?id=${nkid}" class="name">${e.metadata}</a>
             </div>
             <span class="score">${score.toLocaleString()}</span>`;
