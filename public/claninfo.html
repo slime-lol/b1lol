@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clan Info</title>
+<style>
+  body {
+    font-family: 'OETZTYP', sans-serif;
+    background-color: #19003f;
+    color: #eee;
+    padding: 20px;
+  }
+  h1 { color: #ffd700; }
+  .info { margin: 10px 0; }
+  .label { font-weight: bold; color: #ffffff; }
+</style>
+</head>
+<body>
+
+<h1 id="clanName">Loading Clan...</h1>
+<div class="info"><span class="label">Guild ID:</span> <span id="guildID"></span></div>
+<div class="info"><span class="label">Owner:</span> <span id="owner"></span></div>
+<div class="info"><span class="label">Status:</span> <span id="status"></span></div>
+<div class="info"><span class="label">Members:</span> <span id="members"></span></div>
+<div class="info"><span class="label">Max Members:</span> <span id="maxMembers"></span></div>
+<div class="info"><span class="label">Tagline:</span> <span id="tagline"></span></div>
+<div class="info"><span class="label">Shortcode:</span> <span id="shortcode"></span></div>
+<div class="info"><span class="label">Chat Enabled:</span> <span id="chatEnabled"></span></div>
+
+<script>
+async function fetchClanInfo() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const guildID = urlParams.get('id');
+  if (!guildID) {
+    document.getElementById('clanName').textContent = 'No Guild ID provided';
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://priority-static-api.nkstatic.com/storage/static/appdocs/2/guilds/${guildID}`);
+    const clan = await res.json();
+
+    document.getElementById('clanName').textContent = clan.name;
+    document.getElementById('guildID').textContent = clan.guildID;
+    document.getElementById('owner').textContent = clan.owner;
+    document.getElementById('status').textContent = clan.status;
+    document.getElementById('members').textContent = clan.numMembers + (clan.numMembersPending ? ` (+${clan.numMembersPending} pending)` : '');
+    document.getElementById('maxMembers').textContent = clan.maximumMembers;
+    
+    // Parse tagline JSON safely
+    let taglineText = clan.tagline;
+    try {
+      const tg = JSON.parse(clan.tagline);
+      if (tg.Tagline) taglineText = tg.Tagline;
+    } catch(e) {}
+    document.getElementById('tagline').textContent = taglineText;
+
+    document.getElementById('shortcode').textContent = clan.shortcode;
+    document.getElementById('chatEnabled').textContent = clan.chatEnabled ? 'Yes' : 'No';
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('clanName').textContent = 'Failed to load clan info';
+  }
+}
+
+fetchClanInfo();
+</script>
+</body>
+</html>
