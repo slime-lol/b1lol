@@ -87,7 +87,6 @@
   <div class="info"><span class="label">Shortcode:</span> <span class="value" id="shortcode"></span></div>
   <div class="info"><span class="label">Chat Enabled:</span> <span class="value" id="chatEnabled"></span></div>
 </div>
-
 <script>
 async function fetchClanInfo() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -105,12 +104,17 @@ async function fetchClanInfo() {
     document.getElementById('clanName').textContent = clan.name;
     document.getElementById('guildID').textContent = clan.guildID;
 
-    // Fetch owner username by NKID
-    const ownerRes = await fetch(`https://priority-static-api.nkstatic.com/storage/static/appdocs/2/users/${clan.owner}`);
-    const ownerData = await ownerRes.json();
-    const ownerName = ownerData.username || clan.owner;
+    // Fetch owner username by NKID from correct URL
+    let ownerName = clan.owner; // fallback
+    try {
+      const ownerRes = await fetch(`https://priority-static-api.nkstatic.com/storage/static/2/${clan.owner}/PublicProfile.save`);
+      const ownerData = await ownerRes.json();
+      if (ownerData.username) ownerName = ownerData.username;
+    } catch(e) {
+      console.warn('Failed to fetch owner username, using NKID.');
+    }
 
-    // Render owner as a link
+    // Render owner as clickable link
     const ownerEl = document.getElementById('owner');
     ownerEl.innerHTML = `<a href="user.html?id=${clan.owner}" style="color:#ffd700;">${ownerName}</a>`;
 
@@ -140,6 +144,5 @@ async function fetchClanInfo() {
 
 fetchClanInfo();
 </script>
-
 </body>
 </html>
