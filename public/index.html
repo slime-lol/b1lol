@@ -187,146 +187,128 @@
     <ul id="leaderboard">Loading leaderboard...</ul>
   </div>
 
-  <script>
-    let currentMode = 'weekly';
-    const weeklyBtn = document.getElementById('weeklyBtn');
-    const ratingBtn = document.getElementById('ratingBtn');
+<script>
+let currentMode = 'weekly';
+const weeklyBtn = document.getElementById('weeklyBtn');
+const ratingBtn = document.getElementById('ratingBtn');
+const clansBtn = document.getElementById('clansBtn');
 
-    weeklyBtn.onclick = () => { currentMode = 'weekly'; toggle(); };
-    ratingBtn.onclick = () => { currentMode = 'rating'; toggle(); };
+weeklyBtn.onclick = () => { currentMode = 'weekly'; toggle(); };
+ratingBtn.onclick = () => { currentMode = 'rating'; toggle(); };
+clansBtn.onclick = () => { currentMode = 'clans'; toggle(); };
 
-    function toggle(){
-      weeklyBtn.classList.toggle('active', currentMode === 'weekly');
-      ratingBtn.classList.toggle('active', currentMode === 'rating');
-      updateCountdown();
-      fetchLeaderboard();
+function toggle() {
+  weeklyBtn.classList.toggle('active', currentMode === 'weekly');
+  ratingBtn.classList.toggle('active', currentMode === 'rating');
+  clansBtn.classList.toggle('active', currentMode === 'clans');
+  updateCountdown();
+  fetchLeaderboard();
+}
+
+function weeksSinceBase() {
+  const base = new Date('2015-12-16T14:00:00+04:00');
+  return Math.floor((new Date() - base) / (7 * 24 * 60 * 60 * 1e3)) + 30;
+}
+
+function biweeksSinceBase() {
+  const baseSeasonStart = new Date(Date.UTC(2017, 2, 1, 10, 0, 0));
+  const now = new Date();
+  const biweekMs = 14 * 24 * 60 * 60 * 1000;
+  return Math.floor((now - baseSeasonStart) / biweekMs);
+}
+
+function getNextResetTime(mode) {
+  if (mode === 'rating') {
+    const base = new Date(Date.UTC(2017, 1, 15, 10, 0, 0));
+    const biweekMs = 14 * 24 * 60 * 60 * 1e3;
+    const now = new Date();
+    const nextBiweek = Math.ceil((now - base) / biweekMs);
+    return new Date(base.getTime() + nextBiweek * biweekMs);
+  } else {
+    const base = new Date('2015-12-16T14:00:00+04:00');
+    const weekMs = 7 * 24 * 60 * 60 * 1e3;
+    const count = weeksSinceBase() - 29;
+    return new Date(base.getTime() + count * weekMs);
+  }
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const end = getNextResetTime(currentMode);
+  const diff = end - now;
+  const s = Math.floor(diff / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = n => n.toString().padStart(2, '0');
+  const label = currentMode === 'weekly' ? "Next weekly reset in" : "Next season reset in";
+  document.getElementById('timer').textContent =
+    `${label}: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
+}
+
+async function fetchLeaderboard() {
+  const container = document.getElementById('leaderboard');
+  const label = document.getElementById('weeksSince');
+  container.textContent = 'Loading...';
+  try {
+    let url, title, isRating = false;
+
+    if (currentMode === 'weekly') {
+      const w = weeksSinceBase();
+      url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${w}.json`;
+      title = `WEEK #${w}`;
+    } else if (currentMode === 'rating') {
+      const b = biweeksSinceBase();
+      url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${b}:Rating.json`;
+      title = `SEASON #${b}`;
+      isRating = true;
+    } else if (currentMode === 'clans') {
+      const w = weeksSinceBase();
+      url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/guild:compiled:WeeklyMedallions:${w}:Club.json`;
+      title = `CLANS - WEEK #${w}`;
     }
 
-    function weeksSinceBase() {
-      const base = new Date('2015-12-16T14:00:00+04:00');
-      return Math.floor((new Date() - base) / (7 * 24 * 60 * 60 * 1e3)) + 30;
-    }
+    const res = await fetch(url);
+    const { error, data } = await res.json();
+    if (error) throw new Error(error);
+    const parsed = JSON.parse(data);
+    const entries = parsed.scores.equal;
 
-    function biweeksSinceBase() {
-      const baseSeasonStart = new Date(Date.UTC(2017, 2, 1, 10, 0, 0));
-      const now = new Date();
-      const biweekMs = 14 * 24 * 60 * 60 * 1000;
-      const diffBiweeks = Math.floor((now - baseSeasonStart) / biweekMs);
-      return diffBiweeks;
-    }
+    label.textContent = title;
+    container.innerHTML = '';
 
+    entries.forEach((e, i) => {
+      const score = isRating ? e.score / 10 : e.score;
+      const nkid = e.userID;
+      const li = document.createElement('li');
 
+      // Optional: custom badge logic
+      let rankBadge = 'gold';
+      if (i === 0) rankBadge = 'black_diamond';
+      else if (i === 1) rankBadge = 'red_diamond';
+      else if (i === 2) rankBadge = 'diamond';
 
-    function getNextResetTime(mode) {
-      if (mode === 'rating') {
-        const base = new Date(Date.UTC(2017, 1, 15, 10, 0, 0));
-        const biweekMs = 14 * 24 * 60 * 60 * 1e3;
-        const now = new Date();
-        const elapsed = now - base;
-        const nextBiweek = Math.ceil(elapsed / biweekMs);
-        return new Date(base.getTime() + nextBiweek * biweekMs);
-      } else {
-        const base = new Date('2015-12-16T14:00:00+04:00');
-        const weekMs = 7 * 24 * 60 * 60 * 1e3;
-        const count = weeksSinceBase() - 29;
-        return new Date(base.getTime() + count * weekMs);
-      }
-    }
+      li.innerHTML = `
+        <div class="left">
+          <span class="rank">#${i + 1}</span>
+          <img src="badge_images/${rankBadge}.png" alt="badge" id="badge">
+          <a href="user.html?id=${nkid}" class="name">${e.metadata || nkid}</a>
+        </div>
+        <span class="score">${score.toLocaleString()}</span>`;
+      container.appendChild(li);
+    });
 
+  } catch (err) {
+    console.error(err);
+    container.textContent = 'Failed to load leaderboard.';
+  }
+}
 
-    function updateCountdown() {
-      const now = new Date();
-      const end = getNextResetTime(currentMode);
-      const diff = end - now;
-      const s = Math.floor(diff / 1000);
-      const d = Math.floor(s / 86400);
-      const h = Math.floor((s % 86400) / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      const pad = n => n.toString().padStart(2, '0');
-      const label = currentMode === 'weekly' ? "Next weekly reset in" : "Next season reset in";
-      document.getElementById('timer').textContent =
-        `${label}: ${pad(d)}:${pad(h)}:${pad(m)}:${pad(sec)}`;
-    }
+fetchLeaderboard();
+setInterval(updateCountdown, 1000);
+</script>
 
-
-
-    async function fetchLeaderboard() {
-      const container = document.getElementById('leaderboard');
-      const label = document.getElementById('weeksSince');
-      container.textContent = 'Loading...';
-      try {
-        let url, title, isRating = false;
-
-        if (currentMode === 'weekly') {
-          const w = weeksSinceBase();
-          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/WeeklyMedallions:${w}.json`;
-          title = `WEEK #${w}`;
-        } else {
-          const b = biweeksSinceBase();
-          url = `https://priority-static-api.nkstatic.com/storage/static/appdocs/2/leaderboards/ladder:Season_${b}:Rating.json`;
-          title = `SEASON #${b}`;
-          isRating = true;
-        }
-
-        const res = await fetch(url);
-        const { error, data } = await res.json();
-        if (error) throw new Error(error);
-        const parsed = JSON.parse(data);
-        const entries = parsed.scores.equal;
-
-        label.textContent = title;
-        container.innerHTML = '';
-
-        entries.forEach((e, i) => {
-          const score = isRating ? e.score / 10 : e.score;
-          const nkid = e.userID;
-          const li = document.createElement('li');
-          let rank = 100;
-          if (i === 0) {
-            rank = ('black_diamond');
-          } else if (i === 1) {
-            rank = ('red_diamond');
-          } else if (i === 2) {
-            rank = ('diamond');
-          } else if (i < 100) {
-            rank = ('gold');
-          }
-           if (currentMode === 'rating') {
-            if (i === 0) {
-              rank = ('black_diamond_prestige');
-            } else if (i === 1) {
-              rank = ('red_diamond_prestige');
-            } else if (i === 2) {
-              rank = ('diamond_prestige');
-            } else if (i < 10) {
-              rank = ('gold_black_diamond_prestige');
-            } else if (i < 25) {
-              rank = ('gold_red_diamond_prestige');
-            } else if (i < 100) {
-              rank = ('gold_diamond_prestige');
-            }
-          }
-          
-          li.innerHTML = `
-            <div class="left">
-              <span class="rank">#${i + 1}</span>
-              <img src="badge_images/${rank}.png" alt="badge" id="badge">
-              <a href="user.html?id=${nkid}" class="name">${e.metadata}</a>
-            </div>
-            <span class="score">${score.toLocaleString()}</span>`;
-          container.appendChild(li);
-        });
-      } catch (err) {
-        console.error(err);
-        container.textContent = 'Failed to load leaderboard.';
-      }
-    }
-
-
-    fetchLeaderboard();
-    setInterval(updateCountdown, 1000);
-  </script>
 </body>
 </html>
 
