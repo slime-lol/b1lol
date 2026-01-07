@@ -307,14 +307,19 @@ async function fetchLeaderboard() {
       else if (i === 1) rankBadge = 'red_diamond';
       else if (i === 2) rankBadge = 'diamond';
 
+      let badgeHtml = '';
+      if (currentMode !== 'clans') {
+        badgeHtml = `<img src="badge_images/${rankBadge}.png" alt="badge" id="badge">`;
+      }
+
       li.innerHTML = `
         <div class="left">
           <span class="rank">#${i + 1}</span>
-          <img src="badge_images/${rankBadge}.png" alt="badge" id="badge">
-          <a href="claninfo.html?id=${nkid}" class="name">${displayName}</a>
+          ${badgeHtml}
+          <a href="${currentMode === 'clans' ? 'claninfo.html' : 'user.html'}?id=${nkid}" class="name">${displayName}</a>
         </div>
         <span class="score">${score.toLocaleString()}</span>`;
-      container.appendChild(li);
+
     }
 
   } catch (err) {
