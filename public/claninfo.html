@@ -5,28 +5,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clan Info</title>
 <style>
+  @font-face {
+    font-family: 'OETZTYP';
+    src: url('/OETZTYP_.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   body {
     font-family: 'OETZTYP', sans-serif;
     background-color: #19003f;
     color: #eee;
+    margin: 0;
     padding: 20px;
   }
-  h1 { color: #ffd700; }
-  .info { margin: 10px 0; }
-  .label { font-weight: bold; color: #ffffff; }
+
+  h1 {
+    font-size: 2rem;
+    color: #ffd700;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  }
+
+  .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background-color: rgba(173,216,230,0.15);
+    border-radius: 8px;
+  }
+
+  .info:nth-child(even) {
+    background-color: rgba(173,216,230,0.1);
+  }
+
+  .label {
+    font-weight: bold;
+    color: #ffffff;
+    min-width: 120px;
+  }
+
+  .value {
+    text-align: right;
+    color: #ffd700;
+    word-break: break-word;
+  }
+
+  #badgePreview {
+    display: block;
+    margin: 10px auto;
+    width: 80px;
+    height: 80px;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
 </style>
 </head>
 <body>
 
 <h1 id="clanName">Loading Clan...</h1>
-<div class="info"><span class="label">Guild ID:</span> <span id="guildID"></span></div>
-<div class="info"><span class="label">Owner:</span> <span id="owner"></span></div>
-<div class="info"><span class="label">Status:</span> <span id="status"></span></div>
-<div class="info"><span class="label">Members:</span> <span id="members"></span></div>
-<div class="info"><span class="label">Max Members:</span> <span id="maxMembers"></span></div>
-<div class="info"><span class="label">Tagline:</span> <span id="tagline"></span></div>
-<div class="info"><span class="label">Shortcode:</span> <span id="shortcode"></span></div>
-<div class="info"><span class="label">Chat Enabled:</span> <span id="chatEnabled"></span></div>
+<div class="container">
+  <div id="badgePreview"></div>
+  <div class="info"><span class="label">Guild ID:</span> <span class="value" id="guildID"></span></div>
+  <div class="info"><span class="label">Owner:</span> <span class="value" id="owner"></span></div>
+  <div class="info"><span class="label">Status:</span> <span class="value" id="status"></span></div>
+  <div class="info"><span class="label">Members:</span> <span class="value" id="members"></span></div>
+  <div class="info"><span class="label">Max Members:</span> <span class="value" id="maxMembers"></span></div>
+  <div class="info"><span class="label">Tagline:</span> <span class="value" id="tagline"></span></div>
+  <div class="info"><span class="label">Shortcode:</span> <span class="value" id="shortcode"></span></div>
+  <div class="info"><span class="label">Chat Enabled:</span> <span class="value" id="chatEnabled"></span></div>
+</div>
 
 <script>
 async function fetchClanInfo() {
@@ -47,8 +107,7 @@ async function fetchClanInfo() {
     document.getElementById('status').textContent = clan.status;
     document.getElementById('members').textContent = clan.numMembers + (clan.numMembersPending ? ` (+${clan.numMembersPending} pending)` : '');
     document.getElementById('maxMembers').textContent = clan.maximumMembers;
-    
-    // Parse tagline JSON safely
+
     let taglineText = clan.tagline;
     try {
       const tg = JSON.parse(clan.tagline);
@@ -58,6 +117,11 @@ async function fetchClanInfo() {
 
     document.getElementById('shortcode').textContent = clan.shortcode;
     document.getElementById('chatEnabled').textContent = clan.chatEnabled ? 'Yes' : 'No';
+
+    // Optional: Show a placeholder for badge
+    const badge = document.getElementById('badgePreview');
+    badge.textContent = "Clan Badge";
+    // You can later render layers from clan.tagline.Symbol.Layers if you want
 
   } catch (err) {
     console.error(err);
