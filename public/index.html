@@ -278,12 +278,30 @@ async function fetchLeaderboard() {
     label.textContent = title;
     container.innerHTML = '';
 
-    entries.forEach((e, i) => {
+    // If Clans tab, fetch each clan's name
+    const getClanName = async (guildID) => {
+      try {
+        const res = await fetch(`https://priority-static-api.nkstatic.com/storage/static/appdocs/2/guilds/${guildID}`);
+        const clan = await res.json();
+        return clan.name || guildID;
+      } catch {
+        return guildID; // fallback
+      }
+    };
+
+    for (let i = 0; i < entries.length; i++) {
+      const e = entries[i];
       const score = isRating ? e.score / 10 : e.score;
       const nkid = e.userID;
+
+      let displayName = e.metadata || nkid;
+      if (currentMode === 'clans') {
+        displayName = await getClanName(nkid);
+      }
+
       const li = document.createElement('li');
 
-      // Optional: custom badge logic
+      // Optional: top badges logic
       let rankBadge = 'gold';
       if (i === 0) rankBadge = 'black_diamond';
       else if (i === 1) rankBadge = 'red_diamond';
@@ -293,17 +311,18 @@ async function fetchLeaderboard() {
         <div class="left">
           <span class="rank">#${i + 1}</span>
           <img src="badge_images/${rankBadge}.png" alt="badge" id="badge">
-          <a href="user.html?id=${nkid}" class="name">${e.metadata || nkid}</a>
+          <a href="claninfo.html?id=${nkid}" class="name">${displayName}</a>
         </div>
         <span class="score">${score.toLocaleString()}</span>`;
       container.appendChild(li);
-    });
+    }
 
   } catch (err) {
     console.error(err);
     container.textContent = 'Failed to load leaderboard.';
   }
 }
+
 
 fetchLeaderboard();
 setInterval(updateCountdown, 1000);
