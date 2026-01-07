@@ -98,12 +98,22 @@ async function fetchClanInfo() {
   }
 
   try {
+    // Fetch clan info
     const res = await fetch(`https://priority-static-api.nkstatic.com/storage/static/appdocs/2/guilds/${guildID}`);
     const clan = await res.json();
 
     document.getElementById('clanName').textContent = clan.name;
     document.getElementById('guildID').textContent = clan.guildID;
-    document.getElementById('owner').textContent = clan.owner;
+
+    // Fetch owner username by NKID
+    const ownerRes = await fetch(`https://priority-static-api.nkstatic.com/storage/static/appdocs/2/users/${clan.owner}`);
+    const ownerData = await ownerRes.json();
+    const ownerName = ownerData.username || clan.owner;
+
+    // Render owner as a link
+    const ownerEl = document.getElementById('owner');
+    ownerEl.innerHTML = `<a href="user.html?id=${clan.owner}" style="color:#ffd700;">${ownerName}</a>`;
+
     document.getElementById('status').textContent = clan.status;
     document.getElementById('members').textContent = clan.numMembers + (clan.numMembersPending ? ` (+${clan.numMembersPending} pending)` : '');
     document.getElementById('maxMembers').textContent = clan.maximumMembers;
@@ -118,10 +128,9 @@ async function fetchClanInfo() {
     document.getElementById('shortcode').textContent = clan.shortcode;
     document.getElementById('chatEnabled').textContent = clan.chatEnabled ? 'Yes' : 'No';
 
-    // Optional: Show a placeholder for badge
+    // Optional: placeholder for badge
     const badge = document.getElementById('badgePreview');
     badge.textContent = "Clan Badge";
-    // You can later render layers from clan.tagline.Symbol.Layers if you want
 
   } catch (err) {
     console.error(err);
@@ -131,5 +140,6 @@ async function fetchClanInfo() {
 
 fetchClanInfo();
 </script>
+
 </body>
 </html>
