@@ -109,7 +109,7 @@ async function fetchClanInfo() {
     try {
       const ownerRes = await fetch(`https://priority-static-api.nkstatic.com/storage/static/2/${clan.owner}/PublicProfile.save`);
       const ownerData = await ownerRes.json();
-      if (ownerData.username) ownerName = ownerData.username;
+      if (ownerData.username) ownerName = ownerData.Name;
     } catch(e) {
       console.warn('Failed to fetch owner username, using NKID.');
     }
